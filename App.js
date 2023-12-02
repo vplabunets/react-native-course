@@ -1,85 +1,52 @@
-import { ImageBackground, StyleSheet, SafeAreaView } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import { useEffect, useState } from "react";
-import { useFonts } from "expo-font";
-import * as SplashScreen from "expo-splash-screen";
+import { StyleSheet, Button } from "react-native";
 import { StatusBar } from "expo-status-bar";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import StartGameScreen from "./screens/StartGameScreen";
-import GameScreen from "./screens/GameScreen";
-import Colors from "./constants/colors";
-import GameOverScreen from "./screens/GameOverScreen";
+import CategoriesScreen from "./screens/CategoriesScreen";
+import MealsOverviewScreen from "./screens/MealsOverviewScreen";
+import MealDetailsScreen from "./screens/MealDetailsScreen";
+
+const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const [userNumber, setUserNumber] = useState(null);
-  const [gameIsOver, setGameIsOver] = useState(true);
-  const [guessRounds, setGuessRounds] = useState(0);
-
-  const [fontsLoaded] = useFonts({
-    "open-sans": require("./assets/fonts/OpenSans-Regular.ttf"),
-    "open-sans-bold": require("./assets/fonts/OpenSans-Bold.ttf"),
-  });
-
-  useEffect(() => {
-    async function prepare() {
-      await SplashScreen.preventAutoHideAsync();
-    }
-
-    prepare().then(() => {
-      SplashScreen.hideAsync();
-    });
-  }, []);
-
-  if (!fontsLoaded) {
-    return null; // або виведіть інший екран завантаження
-  }
-  function pickedNumberHandler(pickedNumber) {
-    setUserNumber(pickedNumber);
-    setGameIsOver(false);
-  }
-
-  function gameOverHandler(numberOfRounds) {
-    setGameIsOver(true);
-    setGuessRounds(numberOfRounds);
-  }
-
-  function startNewGameHandler() {
-    setUserNumber(null);
-    setGuessRounds(0);
-  }
-
-  let screen = <StartGameScreen onPickNumber={pickedNumberHandler} />;
-  if (userNumber) {
-    screen = (
-      <GameScreen userNumber={userNumber} onGameOver={gameOverHandler} />
-    );
-  }
-  if (gameIsOver && userNumber) {
-    screen = (
-      <GameOverScreen
-        userNumber={userNumber}
-        roundsNumber={guessRounds}
-        onStartNewGame={startNewGameHandler}
-      />
-    );
-  }
-
   return (
     <>
-      <StatusBar style="dark" />
-      <LinearGradient
-        colors={[Colors.primary700, Colors.accent500]}
-        style={styles.rootScreen}
-      >
-        <ImageBackground
-          source={require("./images/background.png")}
-          resizeMode="cover"
-          style={styles.rootScreen}
-          imageStyle={styles.backgroundImage}
+      <StatusBar style="light" />
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName="CategoriesScreen"
+          screenOptions={{
+            headerStyle: { backgroundColor: "#25160d" },
+            headerTintColor: "white",
+            contentStyle: { backgroundColor: "#77472c" },
+          }}
         >
-          <SafeAreaView style={styles.rootScreen}>{screen}</SafeAreaView>
-        </ImageBackground>
-      </LinearGradient>
+          <Stack.Screen
+            name="MealsCategories"
+            component={CategoriesScreen}
+            options={{
+              title: "All Categories",
+            }}
+          />
+          <Stack.Screen
+            name="MealsOverview"
+            component={MealsOverviewScreen}
+            // options={({ route, navigation }) => {
+            //   const categoryId = route.params.categoryId;
+            //   return { title: categoryId };
+            // }}
+          />
+          <Stack.Screen
+            name="MealDetails"
+            component={MealDetailsScreen}
+            // options={{
+            //   headerRight: () => <Button title="Push me" />,
+            //   title: "MealDetailsScreen",
+            // }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
     </>
   );
 }
