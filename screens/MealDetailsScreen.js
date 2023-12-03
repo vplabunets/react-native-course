@@ -1,39 +1,49 @@
-import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  ScrollView,
-  Button,
-} from "react-native";
+import { useLayoutEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+
+import { View, Text, Image, StyleSheet, ScrollView } from "react-native";
 
 import { MEALS } from "../data/dummy-data";
 import MealDetails from "../components/MealDetails";
 import SubTitle from "../components/MealDetails/SubTitle";
 import List from "../components/MealDetails/List";
-import { useLayoutEffect } from "react";
 import IconButton from "../components/IconButton";
+import { addFavorite, removeFavorite } from "../store/redux/favorites";
+// import { FavoritesContext } from "../store/context/favorites-context";
 
 function MealDetailsScreen({ route, navigation }) {
+  // const favoriteMealsCtx = useContext(FavoritesContext);
+  const favoritesMealIds = useSelector((state) => state.favoriteMeals.ids);
+  const dispatch = useDispatch();
+
   const { mealId } = route.params;
 
   const selectedMeal = MEALS.find((meal) => mealId === meal.id);
 
-  function headerButtonPressHandler() {}
+  const mealIsFavorite = favoritesMealIds.includes(mealId);
+
+  function changeFavoriteStatusHandler() {
+    if (mealIsFavorite) {
+      // favoriteMealsCtx.removeFavorite(mealId);
+      dispatch(removeFavorite({ id: mealId }));
+    } else {
+      // favoriteMealsCtx.addFavorite(mealId);
+      dispatch(addFavorite({ id: mealId }));
+    }
+  }
 
   useLayoutEffect(
     () =>
       navigation.setOptions({
         headerRight: () => (
-          //   <Button title="Hello" onPress={headerButtonPressHandler} />
           <IconButton
-            icon="star"
+            icon={mealIsFavorite ? "star" : "star-outline"}
             color="white"
-            onPress={headerButtonPressHandler}
+            onPress={changeFavoriteStatusHandler}
           />
         ),
       }),
-    [navigation, headerButtonPressHandler]
+    [navigation, changeFavoriteStatusHandler]
   );
 
   const {
@@ -59,9 +69,9 @@ function MealDetailsScreen({ route, navigation }) {
       <View style={styles.listOuterContainer}>
         <View style={styles.listContainer}>
           <SubTitle>Ingredients</SubTitle>
-          <List listData={ingredients} />
+          {/* <List listData={ingredients} /> */}
           <SubTitle>Steps</SubTitle>
-          <List listData={steps} />
+          {/* <List listData={steps} /> */}
         </View>
       </View>
     </ScrollView>
