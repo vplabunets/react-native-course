@@ -97,8 +97,8 @@ function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
         invalid={!inputs.description.isValid}
         textInputConfig={{
           multiline: true,
-          //   autocapitalize:"none",
-          //   autocorrect: false,
+          autocapitalize: "none",
+          autocorrect: false,
           onChangeText: inputChangeHandler.bind(this, "description"),
           value: inputs.description.value,
         }}
