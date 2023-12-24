@@ -24,7 +24,6 @@ function PlaceDetails({ route, navigation }) {
       navigation.setOptions({
         title: place.title,
       });
-      // console.log(place);
     }
     loadPlaceData();
   }, [selectedPlaceId]);
